@@ -162,16 +162,18 @@ generate_network() {
 		static)
 			local ipad
 			case "$1" in
-				lan) ipad=${ipaddr:-"192.168.1.1"} ;;
-				*) ipad=${ipaddr:-"192.168.$((addr_offset++)).1"} ;;
+				lan) ipad=${ipaddr:-"10.0.0.3"} ;;
+				*) ipad=${ipaddr:-"10.0.$((addr_offset++)).3"} ;;
 			esac
 
-			netm=${netmask:-"255.255.255.0"}
+			netm=${netmask:-"255.0.0.0"}
 
 			uci -q batch <<-EOF
 				set network.$1.proto='static'
 				set network.$1.ipaddr='$ipad'
 				set network.$1.netmask='$netm'
+				set network.$1.gateway='10.0.0.2'
+				set network.$1.dns='114.114.114.114 8.8.8.8'
 			EOF
 			[ -e /proc/sys/net/ipv6 ] && uci set network.$1.ip6assign='60'
 		;;
